@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Carrinho de Compras com Bootstrap</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+ 
+        body {
+            background-image: url('img/carrinho.jpg'); 
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            background-position: center center;
+        }
+
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 mb-4">Produtos Disponíveis:</h1>
+        <ul class="list-group">
+            <li class="list-group-item" v-for="produto in produtos">
+                {{ produto.nome }} - R$ {{ produto.preco }}
+                <button class="btn btn-success btn-sm" @click="adicionarAoCarrinho(produto)">Adicionar ao Carrinho</button>
+            </li>
+        </ul>
+
+        <h2 class="mt-4 mb-4">Carrinho de Compras:</h2>
+        <ul class="list-group">
+            <li class="list-group-item" v-for="produto in carrinho">
+                {{ produto.nome }} - R$ {{ produto.preco }}
+                <button class="btn btn-danger btn-sm" @click="removerDoCarrinho(produto)">Remover do Carrinho</button>
+            </li>
+        </ul>
+
+        <h3 class="mt-4 mb-4">Total da Compra: R$ {{ calcularTotal() }}</h3>
+        <form>
+            <h2 class="mt-4 mb-4">Informações de Envio:</h2>
+            <div class="mb-3">
+                <label for="nome">Nome:</label>
+                <input type="text" class="form-control" id="nome" placeholder="Nome">
+            </div>
+            <div class="mb-3">
+                <label for endereco>Endereço de Entrega:</label>
+                <input type text class="form-control" id="endereco" placeholder="Endereço">
+            </div>
+            <div class="mb-3">
+                <label for="cep">CEP:</label>
+                <input type="text" class="form-control" id="cep" placeholder="CEP">
+            </div>
+
+            <h2 class="mt-4 mb-4">Informações de Pagamento:</h2>
+            <div class="mb-3">
+                <label for="forma-pagamento">Forma de Pagamento:</label>
+                <select class="form-select" v-model="formaDePagamento">
+                    <option value="cartao">Cartão de Crédito</option>
+                    <option value="boleto">Boleto Bancário</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="paypal">Pix</option>
+                    
+                </select>
+            </div>
+
+            <div class="mb-3" v-if="formaDePagamento === 'cartao'">
+                <label for="numero-cartao">Número do Cartão de Crédito:</label>
+                <input type="text" class="form-control" id="numero-cartao" placeholder="Número do Cartão">
+            </div>
+
+            <div class="mb-3"v-if="formaDePagamento === 'cartao'">
+                <label for="validade">Data de Validade:</label>
+                <input type="text" class="form-control" id="validade" placeholder="MM/AA">
+            </div>
+            <div class="mb-3"v-if="formaDePagamento === 'cartao'">
+                <label for="cvv">CVV:</label>
+                <input type="text" class="form-control" id="cvv" placeholder="CVV">
+            </div>
+        </form>
+        <select class="form-select mt-3" v-model="formaDePagamento">
+            <option value="cartao">Cartão de Crédito</option>
+            <option value="boleto">Boleto Bancário</option>
+            <option value="paypal">PayPal</option>
+            <option value="pix">Pix</option>
+        </select>
+    </div>
+    <div id="propaganda-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 999;">
+        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border-radius: 5px;">
+            <h2>Anúncio Especial!</h2>
+            <p>Compre nossos produtos incríveis agora!</p>
+            <button onclick="fecharPropaganda()">Fechar</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script>
+
+         
+         function mostrarPropaganda() {
+            document.getElementById("propaganda-overlay").style.display = "block";
+        }
+
+      
+        function fecharPropaganda() {
+            document.getElementById("propaganda-overlay").style.display = "none";
+        }
+
+        
+        setTimeout(mostrarPropaganda, 5000); 
+
+        new Vue({
+            el: '.container',
+            data: {
+                produtos: [
+                    { id: 1, nome: 'Produto 1', preco: 10.0},
+                    { id: 2, nome: 'Produto 2', preco: 15.0},
+                    { id: 3, nome: 'Produto 3', preco: 20.0},
+                    { id: 4, nome: 'Produto 4', preco: 30.0},
+                    { id: 5, nome: 'Produto 5', preco: 40.0}
+                ],
+                carrinho: [],
+                formaDePagamento: 'cartao'
+            },
+            methods: {
+                adicionarAoCarrinho(produto) {
+                    this.carrinho.push(produto);
+                },
+                removerDoCarrinho(produto) {
+                    const index = this.carrinho.indexOf(produto);
+                    if (index !== -1) {
+                        this.carrinho.splice(index, 1);
+                    }
+                },
+                calcularTotal() {
+                    return this.carrinho.reduce((total, produto) => total + produto.preco, 0);
+                }
+            }
+            
+        });
+        
+    </script>
+     <div class="d-flex justify-content-center mt-3">
+        <button class="btn btn-success" @click="finalizarPagamento">Finalizar Pagamento</button>
+    </div>
+</body>
+</html>
